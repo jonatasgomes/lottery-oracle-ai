@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LottoOracle AI — Advanced Statistical & Predictive Lottery Intelligence</title>
+  <meta name="description" content="AI and statistical lottery number predictor analyzing historical winning frequencies, overdue gap cycles, harmonic parity balance, Markov chains, and Monte Carlo ensembles.">
+  
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/src/styles/main.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header-glass">
+      <div class="brand-block">
+        <div class="brand-logo-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+            <path d="M2 12h20"></path>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>LottoOracle AI</h1>
+          <span class="brand-subtitle">Quantum & Statistical 6-Number Predictor</span>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <div class="preset-picker-group">
+          <label for="lottery-preset-select">Lottery Format:</label>
+          <select id="lottery-preset-select" class="custom-select">
+            <option value="classic-649">Classic 6/49 (1-49)</option>
+            <option value="power-650">Euro 6/50 (1-50)</option>
+            <option value="mega-659">Mega 6/59 (1-59)</option>
+            <option value="lucky-645">Lucky 6/45 (1-45)</option>
+            <option value="super-660">Super 6/60 (1-60)</option>
+          </select>
+        </div>
+
+        <button class="btn btn-outline" id="btn-toggle-sound" title="Toggle Sound Effects">
+          <span id="sound-icon">🔊</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Quick Stats Ticker Bar -->
+    <div class="quick-stats-strip">
+      <div class="stat-chip-card">
+        <div class="stat-chip-icon icon-gold">📜</div>
+        <div class="stat-chip-info">
+          <span class="stat-chip-label">Draws Analyzed</span>
+          <span class="stat-chip-value mono-font" id="stat-total-draws">140</span>
+        </div>
+      </div>
+
+      <div class="stat-chip-card">
+        <div class="stat-chip-icon icon-cyan">🔥</div>
+        <div class="stat-chip-info">
+          <span class="stat-chip-label">Hottest Number</span>
+          <span class="stat-chip-value mono-font" id="stat-hot-number">#23 (22x)</span>
+        </div>
+      </div>
+
+      <div class="stat-chip-card">
+        <div class="stat-chip-icon icon-purple">❄️</div>
+        <div class="stat-chip-info">
+          <span class="stat-chip-label">Coldest / Most Overdue</span>
+          <span class="stat-chip-value mono-font" id="stat-cold-number">#08 (24d gap)</span>
+        </div>
+      </div>
+
+      <div class="stat-chip-card">
+        <div class="stat-chip-icon icon-emerald">⚖️</div>
+        <div class="stat-chip-info">
+          <span class="stat-chip-label">Optimal Sum Range</span>
+          <span class="stat-chip-value mono-font" id="stat-sum-range">125 - 175</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Navigation Tabs -->
+    <nav class="app-tabs-nav">
+      <button class="tab-btn active" data-tab="tab-predictor">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="12 6 12 12 16 14"></polygon></svg>
+        🔮 Oracle Predictor
+      </button>
+
+      <button class="tab-btn" data-tab="tab-analytics">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+        📊 Statistical Intelligence
+      </button>
+
+      <button class="tab-btn" data-tab="tab-history">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        📜 Winning History (<span id="tab-draw-count">140</span>)
+      </button>
+
+      <button class="tab-btn" data-tab="tab-backtest">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+        🧪 Backtest Simulator
+      </button>
+
+      <button class="tab-btn" data-tab="tab-portfolio">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        🎟️ Saved Tickets & Checker <span class="tab-badge" id="saved-tickets-badge">0</span>
+      </button>
+    </nav>
+
+    <!-- =========================================================================
+         TAB 1: ORACLE PREDICTOR
+         ========================================================================= -->
+    <div id="tab-predictor" class="tab-pane active">
+      <div class="predictor-layout-grid">
+        <!-- Left: Configuration & Controls -->
+        <div class="predictor-config-card">
+          <div class="section-header">
+            <h3 class="section-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              Prediction Engine
+            </h3>
+            <p class="section-desc">Select an algorithm model and customize mathematical constraints.</p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="algo-select">Algorithm Model:</label>
+            <select id="algo-select" class="algo-select-box">
+              <option value="quantum-ensemble">✨ Quantum Monte Carlo Ensemble (Recommended)</option>
+              <option value="frequency-momentum">🔥 Hot Momentum Surge</option>
+              <option value="overdue-reversion">❄️ Cold & Overdue Reversion</option>
+              <option value="harmonic-balance">⚖️ Harmonic Golden Ratio</option>
+              <option value="markov-pairs">🕸️ Markov Co-occurrence Network</option>
+              <option value="delta-system">📐 Delta Difference Pattern</option>
+            </select>
+            <div class="algo-info-card" id="algo-description">
+              Runs 10,000 probabilistic simulations combining recency decay, overdue gap cycles, harmonic sum balance, and pair synergy.
+            </div>
+          </div>
+
+          <!-- Constraints Accordion -->
+          <div class="constraints-accordion">
+            <div class="accordion-title">
+              <span>Mathematical Filters</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Parity Balance:</label>
+              <div class="pill-selector" id="parity-pill-group">
+                <button type="button" class="pill-btn active" data-val="any">Any Natural</button>
+                <button type="button" class="pill-btn" data-val="balanced">3O / 3E</button>
+                <button type="button" class="pill-btn" data-val="odd-heavy">Odd Heavy</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                <span>Must Include Numbers:</span>
+                <small class="text-muted" id="must-include-count">0 / 3</small>
+              </label>
+              <input type="text" id="must-include-input" class="algo-select-box" placeholder="e.g. 7, 23 (optional)">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                <span>Blacklisted Numbers:</span>
+              </label>
+              <input type="text" id="blacklist-input" class="algo-select-box" placeholder="e.g. 13, 44 (exclude)">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <span>Lines to Generate:</span>
+              <span class="count-display" id="ticket-count-num">1</span>
+            </label>
+            <div class="ticket-count-row">
+              <input type="range" id="ticket-count-slider" class="count-slider" min="1" max="10" value="1">
+            </div>
+          </div>
+
+          <button class="btn btn-primary-hero" id="btn-generate-prediction">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            Generate 6 Numbers
+          </button>
+
+          <button class="btn btn-outline" id="btn-generate-wheel">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+            Generate Smart 5-Line Wheel
+          </button>
+        </div>
+
+        <!-- Right: Prediction Stage & Details -->
+        <div class="predictor-results-panel">
+          <!-- Hero Stage -->
+          <div class="hero-prediction-stage">
+            <div class="stage-top-meta">
+              <h2 class="stage-title" id="stage-algo-title">Quantum Monte Carlo Ensemble</h2>
+              <div class="confidence-chip" id="stage-confidence-chip">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span id="stage-confidence-text">96% High Match Potential</span>
+              </div>
+            </div>
+
+            <!-- 3D Lottery Balls Display Container -->
+            <div id="hero-balls-display">
+              <!-- Dynamically Populated with 3D glossy lottery balls -->
+            </div>
+
+            <div class="stage-actions-row">
+              <button class="btn btn-outline" id="btn-save-hero-ticket">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                Save to Portfolio
+              </button>
+              <button class="btn btn-outline" id="btn-copy-hero-ticket">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy Numbers
+              </button>
+            </div>
+          </div>
+
+          <!-- Ticket Rationale Breakdown -->
+          <div class="prediction-breakdown-card" id="prediction-breakdown-card">
+            <h3 class="breakdown-header">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+              Statistical Rationale & Harmonic Verification
+            </h3>
+
+            <div class="metrics-pills-row" id="breakdown-metrics-pills">
+              <!-- Dynamically populated metrics -->
+            </div>
+
+            <div class="rationale-list" id="breakdown-rationale-list">
+              <!-- Dynamically populated rationales -->
+            </div>
+          </div>
+
+          <!-- Multi-Line Generated Container (When lines > 1) -->
+          <div id="multi-lines-container" class="generated-lines-list" style="display: none;">
+            <!-- Render extra tickets -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================================
+         TAB 2: STATISTICAL INTELLIGENCE DASHBOARD
+         ========================================================================= -->
+    <div id="tab-analytics" class="tab-pane">
+      <div class="stats-dashboard-grid">
+        <!-- Number Frequency Bar Chart -->
+        <div class="stats-card">
+          <div class="stats-card-header">
+            <div>
+              <h3>Historical Number Draw Frequency Matrix</h3>
+              <p class="section-desc">Total appearances of each number across historical winning draws.</p>
+            </div>
+            <div class="color-legend">
+              <span style="color: #EF4444;">● Hot</span> &nbsp;
+              <span style="color: #10B981;">● Warm</span> &nbsp;
+              <span style="color: #06B6D4;">● Cold</span>
+            </div>
+          </div>
+          <div class="canvas-container">
+            <canvas id="frequency-bar-canvas"></canvas>
+          </div>
+        </div>
+
+        <!-- Heatmap Grid -->
+        <div class="stats-card">
+          <div class="stats-card-header">
+            <div>
+              <h3>Interactive Number Matrix Heatmap</h3>
+              <p class="section-desc">Color intensity reflects historical draw frequency and current overdue gap.</p>
+            </div>
+          </div>
+          <div id="heatmap-grid-container"></div>
+        </div>
+
+        <!-- Sum Bell Curve Chart -->
+        <div class="stats-card">
+          <div class="stats-card-header">
+            <div>
+              <h3>Winning Ticket Sum Bell Curve Distribution</h3>
+              <p class="section-desc">Comparison of actual historical sum distribution vs Gaussian normal curve with optimal 70% sweetspot.</p>
+            </div>
+          </div>
+          <div class="canvas-container">
+            <canvas id="sum-bell-canvas"></canvas>
+          </div>
+        </div>
+
+        <!-- Parity & High/Low Breakdown -->
+        <div id="parity-breakdown-container"></div>
+      </div>
+    </div>
+
+    <!-- =========================================================================
+         TAB 3: HISTORICAL WINNING DRAWS TABLE
+         ========================================================================= -->
+    <div id="tab-history" class="tab-pane">
+      <div id="history-table-container"></div>
+    </div>
+
+    <!-- =========================================================================
+         TAB 4: ALGORITHM BACKTESTER
+         ========================================================================= -->
+    <div id="tab-backtest" class="tab-pane">
+      <div class="backtest-config-strip">
+        <div>
+          <h3>Algorithm Historical Backtester</h3>
+          <p class="section-desc">Simulate sliding window predictions across past draws to measure hit rates and prize outcomes.</p>
+        </div>
+
+        <div class="backtest-inputs-group">
+          <select id="backtest-algo-select" class="algo-select-box" style="width: auto;">
+            <option value="quantum-ensemble">✨ Quantum Ensemble</option>
+            <option value="frequency-momentum">🔥 Hot Momentum</option>
+            <option value="overdue-reversion">❄️ Cold Reversion</option>
+            <option value="harmonic-balance">⚖️ Harmonic Balance</option>
+            <option value="markov-pairs">🕸️ Markov Pairs</option>
+            <option value="delta-system">📐 Delta System</option>
+          </select>
+
+          <select id="backtest-draws-count" class="algo-select-box" style="width: auto;">
+            <option value="30">Last 30 Draws</option>
+            <option value="50" selected>Last 50 Draws</option>
+            <option value="80">Last 80 Draws</option>
+          </select>
+
+          <button class="btn btn-primary-hero" id="btn-run-backtest">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            Run Simulation
+          </button>
+        </div>
+      </div>
+
+      <div id="backtest-results-container">
+        <!-- Backtest results loaded dynamically -->
+      </div>
+    </div>
+
+    <!-- =========================================================================
+         TAB 5: SAVED TICKETS & CHECKER
+         ========================================================================= -->
+    <div id="tab-portfolio" class="tab-pane">
+      <div class="backtest-config-strip" style="margin-bottom: 20px;">
+        <div>
+          <h3>Live Ticket Match Checker</h3>
+          <p class="section-desc">Select any historical winning draw to check your saved tickets for winning hits.</p>
+        </div>
+        <div class="backtest-inputs-group">
+          <label for="checker-draw-select" style="font-size: 0.85rem; font-weight: 600;">Check Against Draw:</label>
+          <select id="checker-draw-select" class="algo-select-box" style="width: auto;">
+            <!-- Loaded dynamically with recent draws -->
+          </select>
+          <button class="btn btn-outline" id="btn-check-matches">Check Matches</button>
+        </div>
+      </div>
+
+      <div id="saved-tickets-container"></div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODALS
+       ========================================================================= -->
+  <!-- Add Draw Modal -->
+  <div class="modal-overlay" id="add-draw-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Add Winning Draw</h3>
+        <button class="modal-close-btn" data-close="add-draw-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Draw Number:</label>
+          <input type="number" id="add-draw-number" class="algo-select-box" value="1141">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Draw Date:</label>
+          <input type="date" id="add-draw-date" class="algo-select-box">
+        </div>
+        <div class="form-group">
+          <label class="form-label">6 Winning Numbers (1 - <span class="modal-max-num">49</span>):</label>
+          <div class="ball-inputs-row">
+            <input type="number" id="add-ball-1" class="ball-input" placeholder="1" min="1" max="60">
+            <input type="number" id="add-ball-2" class="ball-input" placeholder="2" min="1" max="60">
+            <input type="number" id="add-ball-3" class="ball-input" placeholder="3" min="1" max="60">
+            <input type="number" id="add-ball-4" class="ball-input" placeholder="4" min="1" max="60">
+            <input type="number" id="add-ball-5" class="ball-input" placeholder="5" min="1" max="60">
+            <input type="number" id="add-ball-6" class="ball-input" placeholder="6" min="1" max="60">
+          </div>
+        </div>
+        <div class="form-group" id="modal-bonus-group">
+          <label class="form-label">Bonus Ball (Optional):</label>
+          <div style="display: flex; justify-content: center;">
+            <input type="number" id="add-ball-bonus" class="ball-input bonus-inp" placeholder="B" min="1" max="60">
+          </div>
+        </div>
+        <button class="btn btn-primary-hero" id="btn-save-new-draw" style="width: 100%; margin-top: 10px;">Save Winning Draw</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import CSV/JSON Modal -->
+  <div class="modal-overlay" id="import-draws-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Import Historical Draws</h3>
+        <button class="modal-close-btn" data-close="import-draws-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="section-desc">Paste CSV lines (e.g. <code>2024-05-12, 4, 11, 23, 31, 42, 49, 15</code>) or JSON array of past winning draws.</p>
+        <textarea id="import-textarea" class="import-textarea" placeholder="DrawNumber,Date,B1,B2,B3,B4,B5,B6,Bonus..."></textarea>
+        <button class="btn btn-primary-hero" id="btn-process-import" style="width: 100%;">Process & Import Draws</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Printable Play Slip Modal -->
+  <div class="modal-overlay" id="print-slip-modal">
+    <div class="modal-card" style="max-width: 520px; background: transparent; border: none; padding: 0;">
+      <div style="display: flex; justify-content: flex-end; margin-bottom: 8px;">
+        <button class="modal-close-btn" data-close="print-slip-modal" style="background: #FFF; border-radius: 50%; width: 32px; height: 32px; color: #000;">&times;</button>
+      </div>
+      <div id="print-slip-content"></div>
+      <div style="display: flex; gap: 10px; margin-top: 14px;">
+        <button class="btn btn-primary-hero" onclick="window.print()" style="flex: 1;">Print Official Slip</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Application Entry Script -->
+  <script type="module" src="/src/js/app.js"></script>
+</body>
+</html>
